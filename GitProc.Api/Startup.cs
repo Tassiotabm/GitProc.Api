@@ -6,6 +6,7 @@ using GitProc.Api.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -35,6 +36,12 @@ namespace GitProc.Api
                 config.Filters.Add(new AuthorizeFilter(policy));
             });*/
 
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             services.AddCors(o => o.AddPolicy("AcceptAll", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -61,6 +68,10 @@ namespace GitProc.Api
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseMigration(env);
             app.UseHttpsRedirection();
