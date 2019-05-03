@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GitProc.Api.Models;
+using GitProc.Services;
+using GitProc.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,24 +14,50 @@ namespace GitProc.Api.Controllers
     [Route("api/[controller]")]
     public class ProcessoController : Controller
     {
-        // GET: api/<controller>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IUserService _userService;
+        private readonly IAdvogadoService _advogadoService;
+        private readonly IEscritorioService _escritorioService;
+        private readonly IProcessoService _processService;
+
+        public ProcessoController(
+            IAdvogadoService advogadoService,
+            IEscritorioService escritorioService,
+            IUserService usuarioService,
+            IProcessoService processoService)
         {
-            return new string[] { "value1", "value2" };
+            _processService = processoService;
+            _userService = usuarioService;
+            _advogadoService = advogadoService;
+            _escritorioService = escritorioService;
         }
 
         // GET api/<controller>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> Get(Guid userId)
         {
-            return "value";
+            try
+            {
+                var List = await _processService.GetAllFromAdvogado(userId);
+                return Ok(List);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult> Post([FromBody]ProcessModel Processo)
         {
+            try
+            {
+                await _processService.CreateProcessoAsync(Processo.UserId, Processo.IdProcesso);
+                return Ok();
+            }catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         // PUT api/<controller>/5

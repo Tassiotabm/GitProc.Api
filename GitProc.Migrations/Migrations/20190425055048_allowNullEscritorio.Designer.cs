@@ -3,15 +3,17 @@ using System;
 using GitProc.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GitProc.Migrations.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    partial class DomainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190425055048_allowNullEscritorio")]
+    partial class allowNullEscritorio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,17 +88,7 @@ namespace GitProc.Migrations.Migrations
                     b.Property<Guid>("ProcessoId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("AdvogadoId");
-
-                    b.Property<string>("Comarca");
-
-                    b.Property<DateTime>("DataAdicionado");
-
-                    b.Property<string>("Numero");
-
                     b.HasKey("ProcessoId");
-
-                    b.HasIndex("AdvogadoId");
 
                     b.ToTable("Processos");
                 });
@@ -147,13 +139,6 @@ namespace GitProc.Migrations.Migrations
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("GitProc.Model.Data.Processo", b =>
-                {
-                    b.HasOne("GitProc.Model.Data.Advogado", "Advogado")
-                        .WithMany()
-                        .HasForeignKey("AdvogadoId");
                 });
 #pragma warning restore 612, 618
         }

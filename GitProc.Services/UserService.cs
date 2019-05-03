@@ -18,8 +18,15 @@ namespace GitProc.Services
 
         public async Task<Usuario> CreateUser(Usuario user)
         {
-            user.LastLogin = new DateTime();
+            Usuario existUser = await _uow.Usuario.SingleOrDefault(x => x.Login == user.Login);
+            if (existUser != null)
+            {
+                return null;
+            }
+
+            user.LastLogin = DateTime.Now;
             user.UsuarioId = new Guid();
+
             await _uow.Usuario.Add(user);
             _uow.Complete();
             return user;
@@ -41,10 +48,10 @@ namespace GitProc.Services
             _uow.Complete();
         }
 
-        public async Task<bool> Login (string password, string login)
+        public async Task<Usuario> Login (string password, string login)
         {
             Usuario user = await _uow.Usuario.SingleOrDefault(x => x.Login == login && x.Password == password);
-            return user != null ? true : false;
+            return user;
         }
     }
 }

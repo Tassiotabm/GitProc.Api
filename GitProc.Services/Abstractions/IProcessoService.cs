@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GitProc.Model.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace GitProc.Services.Abstractions
 {
     public interface IProcessoService
     {
+        Task CreateProcessoAsync(Guid userId, string newProcesso);
+        Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId);
     }
 }

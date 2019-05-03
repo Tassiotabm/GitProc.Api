@@ -2,11 +2,8 @@
 using GitProc.Data.Repository;
 using GitProc.Data.Repository.Abstractions;
 using GitProc.Services;
+using GitProc.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GitProc.Api.Extensions
 {
@@ -19,7 +16,10 @@ namespace GitProc.Api.Extensions
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAdvogadoService, AdvogadoService>();
-
+            services.AddScoped<IEscritorioService, EscritorioService>();
+            services.AddScoped<IEscritorioRepository, EscritorioRepository>();
+            services.AddScoped<IProcessoRepository, ProcessoRepository>();
+            services.AddScoped<IProcessoService, ProcessoService>();
         }
     }
 }

@@ -16,8 +16,14 @@ namespace GitProc.Services
 
         public async Task CreateAdvogado(Advogado advogado)
         {
+            advogado.CreatedAt = DateTime.Now;
             await _uow.Advogado.Add(advogado);
             _uow.Complete();
+        }
+
+        public async Task<Advogado> GetAdvogadoFromUserId(Guid userId)
+        {
+            return await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
         }
 
         public async Task RemoveAdvogado(Guid advogadoId)

@@ -34,8 +34,9 @@ namespace GitProc.Api.Controllers
         {
             try
             {
-                if (await _userService.Login(model.Password, model.Email))
-                    return Ok();
+                Usuario user = await _userService.Login(model.Password, model.Email);
+                if (user != null)
+                    return Ok(user.UsuarioId);
                 else
                     return Unauthorized();
             }
@@ -52,8 +53,10 @@ namespace GitProc.Api.Controllers
             try
             {
                 var User = await _userService.CreateUser(new Usuario { Login = model.Login, Password = model.Password});
+                if (User == null)
+                    return BadRequest("Usuário já existe!");
                 await _advogadoService.CreateAdvogado(new Advogado { OAB = model.OAB, Usuario = User, Escritorio = model.Escritorio, Name = model.Name });
-                return Ok();
+                return Ok(User.UsuarioId);
             }
             catch (Exception ex)
             {

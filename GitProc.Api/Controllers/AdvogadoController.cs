@@ -43,5 +43,18 @@ namespace GitProc.Api.Controllers
             }
         }
 
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> Get(Guid userId)
+        {
+            try
+            {
+                Advogado advogadoData = await _advogadoService.GetAdvogadoFromUserId(userId);
+                return Ok(advogadoData);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

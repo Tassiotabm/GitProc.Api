@@ -25,4 +25,10 @@ namespace GitProc.Api.Models
         public string Name { get; set; }
         public Escritorio Escritorio { get; set; }
     }
+
+    public class ProcessModel
+    {
+        public Guid UserId { get; set; }
+        public string IdProcesso { get; set; }
+    }
 }

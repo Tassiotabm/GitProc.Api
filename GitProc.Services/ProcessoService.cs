@@ -13,16 +13,30 @@ namespace GitProc.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IProcessoMasterService _processoMasterService;
+        private readonly IAdvogadoService _advogadoService;
 
         public ProcessoService(IUnitOfWork uow)
         {
             _uow = uow;
         }
 
-        public async Task CreateProcessoAsync(Processo newProcesso)
+        public async Task CreateProcessoAsync(Guid userId, string newProcesso)
         {
-            await _uow.Processo.Add(newProcesso);
+            Advogado advogado = await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
+            await _uow.Processo.Add(new Processo {
+                Advogado = advogado,
+                Numero = newProcesso,
+                ProcessoId = new Guid(),
+                DataAdicionado = DateTime.Now,
+                Comarca = "A ser adicionado",
+                AdvogadoId = advogado.AdvogadoId
+            });
             _uow.Complete();
+        }
+
+        public async Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId)
+        {
+            return await _uow.Processo.GetAll(x => x.AdvogadoId == AdvogadoId);
         }
 
     }

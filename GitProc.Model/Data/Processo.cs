@@ -9,7 +9,11 @@ namespace GitProc.Model.Data
     public class Processo
     {
         public Guid ProcessoId { get; set; }
-
+        public virtual Advogado Advogado { get; set; }
+        public Guid? AdvogadoId { get; set; }
+        public string Numero { get; set; }
+        public string Comarca { get; set; }
+        public DateTime DataAdicionado { get; set; }
         //a ser adicionado mais informacao
     }
 
