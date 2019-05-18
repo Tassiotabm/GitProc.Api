@@ -6,8 +6,8 @@ namespace GitProc.Services
 {
     public interface IEscritorioService
     {
-        Task<Escritorio> CreateEscritorio(Escritorio escritorio);
+        Task<Escritorio> CreateEscritorio(Escritorio escritorio, Guid advogadoId);
         Task RemoveEscritorio(Guid escritorioId);
-        Task EditEscritorio(string endereco, string name, string CNPJ, Guid escritorioId);
+        Task EditEscritorio(Escritorio escritorio);
     }
 }

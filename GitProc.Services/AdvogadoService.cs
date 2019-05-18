@@ -23,7 +23,7 @@ namespace GitProc.Services
 
         public async Task<Advogado> GetAdvogadoFromUserId(Guid userId)
         {
-            return await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
+            return await _uow.Advogado.GetAllAdvogadoInfos(userId);
         }
 
         public async Task RemoveAdvogado(Guid advogadoId)

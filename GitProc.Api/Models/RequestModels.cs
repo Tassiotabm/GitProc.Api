@@ -26,6 +26,12 @@ namespace GitProc.Api.Models
         public Escritorio Escritorio { get; set; }
     }
 
+    public class EscritorioModel
+    {
+        public Escritorio Escritorio { get; set; }
+        public Guid AdvogadoId { get; set; }
+    }
+
     public class ProcessModel
     {
         public Guid UserId { get; set; }

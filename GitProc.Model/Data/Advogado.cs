@@ -12,7 +12,7 @@ namespace GitProc.Model.Data
         public string OAB { get; set; }
         public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
-        public virtual Escritorio Escritorio { get; set; }
+        public Escritorio Escritorio { get; set; }
         public Guid? EscritorioId { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GitProc.Api.Models;
 using GitProc.Model.Data;
 using GitProc.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -30,11 +31,11 @@ namespace GitProc.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost()]
-        public async Task<IActionResult> Post([FromBody] Escritorio model)
+        public async Task<IActionResult> Post([FromBody] EscritorioModel model)
         {
             try
             {
-                await _escritorioService.CreateEscritorio(model);
+                await _escritorioService.CreateEscritorio(model.Escritorio,model.AdvogadoId);
                 return Ok();
             }
             catch (Exception ex)

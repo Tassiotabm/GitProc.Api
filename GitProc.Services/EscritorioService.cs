@@ -17,10 +17,19 @@ namespace GitProc.Services
             _uow = uow;
         }
 
-        public async Task<Escritorio> CreateEscritorio(Escritorio escritorio)
+        public async Task<Escritorio> CreateEscritorio(Escritorio escritorio,Guid advogadoId)
         {
-            await _uow.Escritorio.Add(escritorio);
-            _uow.Complete();
+            if (escritorio.EscritorioId == Guid.Empty)
+            {
+                await _uow.Escritorio.Add(escritorio);
+                _uow.Complete();
+                Advogado advogado = await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == advogadoId);
+                advogado.Escritorio = escritorio;
+                _uow.Complete();
+            }
+            else
+                await EditEscritorio(escritorio);
+            
             return escritorio;
         }
 
@@ -31,13 +40,13 @@ namespace GitProc.Services
             _uow.Complete();
         }
 
-        public async Task EditEscritorio(string endereco, string name, string CNPJ, Guid escritorioId)
+        public async Task EditEscritorio(Escritorio escritorio)
         {
-            Escritorio escritorioToBeEdited = await _uow.Escritorio.SingleOrDefault(x => x.EscritorioId == escritorioId);
+            Escritorio escritorioToBeEdited = await _uow.Escritorio.SingleOrDefault(x => x.EscritorioId == escritorio.EscritorioId);
             _uow.Escritorio.Attach(escritorioToBeEdited);
-            escritorioToBeEdited.Endereco = endereco;
-            escritorioToBeEdited.CNPJ = CNPJ;
-            escritorioToBeEdited.Name = name;
+            escritorioToBeEdited.Endereco = escritorio.Endereco;
+            escritorioToBeEdited.CNPJ = escritorio.CNPJ;
+            escritorioToBeEdited.Name = escritorio.Name;
             _uow.Complete();
         }
 
