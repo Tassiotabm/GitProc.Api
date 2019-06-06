@@ -1,4 +1,5 @@
 ﻿using GitProc.Data;
+using GitProc.Model.Data;
 using GitProc.Services.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,11 @@ namespace GitProc.Services
         public ProcessoMasterService(IUnitOfWork uow)
         {
             _uow = uow;
+        }
+
+        public void SaveProcessoMaster(ProcessoMaster processo)
+        {
+            _uow.ProcessoMaster.Add(processo);
         }
     }
 }

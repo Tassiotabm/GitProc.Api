@@ -12,12 +12,12 @@ namespace GitProc.Services
     public class ProcessoService : IProcessoService
     {
         private readonly IUnitOfWork _uow;
-        private readonly IProcessoMasterService _processoMasterService;
-        private readonly IAdvogadoService _advogadoService;
+        private readonly ITribunalService _tribunalService;
 
-        public ProcessoService(IUnitOfWork uow)
+        public ProcessoService(IUnitOfWork uow, ITribunalService tribunalService)
         {
             _uow = uow;
+            _tribunalService = tribunalService;
         }
 
         public async Task CreateProcessoAsync(Guid userId, string newProcesso)
@@ -32,6 +32,9 @@ namespace GitProc.Services
                 AdvogadoId = advogado.AdvogadoId
             });
             _uow.Complete();
+
+            await _tribunalService.GetOnlineProcessData(newProcesso);
+
         }
 
         public async Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId)
