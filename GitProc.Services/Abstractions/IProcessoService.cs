@@ -11,5 +11,6 @@ namespace GitProc.Services.Abstractions
     {
         Task CreateProcessoAsync(Guid userId, string newProcesso);
         Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId);
+        Task<IEnumerable<Processo>> GetAllFromEscritorio(Guid userId);
     }
 }

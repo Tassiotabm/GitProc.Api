@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using GitProc.Model.Data;
+using System.Threading.Tasks;
 
 namespace GitProc.Services
 {
     public interface ITribunalService
     {
-        Task GetOnlineProcessData(string processoNumber);
+        Task<ProcessoMaster> GetOnlineProcessData(string processoNumber);
+        Task UpdateProcess(ProcessoMaster processo);
     }
 }

@@ -1,14 +1,10 @@
 ﻿using GitProc.Model.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GitProc.Services.Abstractions
 {
     public interface IProcessoMasterService
     {
-        void SaveProcessoMaster(ProcessoMaster processo);
+        Task<ProcessoMaster> SaveProcessoMaster(ProcessoMaster processo);
     }
 }

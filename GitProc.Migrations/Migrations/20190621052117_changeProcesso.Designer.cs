@@ -3,15 +3,17 @@ using System;
 using GitProc.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GitProc.Migrations.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    partial class DomainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190621052117_changeProcesso")]
+    partial class changeProcesso
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,8 +118,6 @@ namespace GitProc.Migrations.Migrations
 
                     b.Property<DateTime>("DataAdicionado");
 
-                    b.Property<Guid?>("EscritorioId");
-
                     b.Property<string>("Numero");
 
                     b.Property<Guid?>("ProcessoMasterId");
@@ -125,8 +125,6 @@ namespace GitProc.Migrations.Migrations
                     b.HasKey("ProcessoId");
 
                     b.HasIndex("AdvogadoId");
-
-                    b.HasIndex("EscritorioId");
 
                     b.HasIndex("ProcessoMasterId");
 
@@ -160,7 +158,7 @@ namespace GitProc.Migrations.Migrations
 
                     b.Property<string>("Instancia");
 
-                    b.Property<string>("NumeroProcesso");
+                    b.Property<string>("ProcessoId");
 
                     b.Property<string>("Tribunal");
 
@@ -169,6 +167,16 @@ namespace GitProc.Migrations.Migrations
                     b.HasKey("ProcessoMasterId");
 
                     b.ToTable("ProcessoMaster");
+                });
+
+            modelBuilder.Entity("GitProc.Model.Data.ProcessoVersionado", b =>
+                {
+                    b.Property<Guid>("ProcessoVersionadoId")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("ProcessoVersionadoId");
+
+                    b.ToTable("ProcessoVersionados");
                 });
 
             modelBuilder.Entity("GitProc.Model.Data.Usuario", b =>
@@ -211,10 +219,6 @@ namespace GitProc.Migrations.Migrations
                     b.HasOne("GitProc.Model.Data.Advogado", "Advogado")
                         .WithMany()
                         .HasForeignKey("AdvogadoId");
-
-                    b.HasOne("GitProc.Model.Data.Escritorio", "Escritorio")
-                        .WithMany()
-                        .HasForeignKey("EscritorioId");
 
                     b.HasOne("GitProc.Model.Data.ProcessoMaster", "ProcessoMaster")
                         .WithMany()

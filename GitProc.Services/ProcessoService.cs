@@ -13,33 +13,63 @@ namespace GitProc.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly ITribunalService _tribunalService;
+        private readonly IEscritorioService _escritorioService;
+        private readonly IAdvogadoService _advogadoService;        
 
-        public ProcessoService(IUnitOfWork uow, ITribunalService tribunalService)
+        public ProcessoService(IUnitOfWork uow,
+            IEscritorioService escritorioService,
+            IAdvogadoService advogadoService,
+            ITribunalService tribunalService)
         {
             _uow = uow;
+            _advogadoService = advogadoService;
+            _escritorioService = escritorioService;
             _tribunalService = tribunalService;
         }
 
         public async Task CreateProcessoAsync(Guid userId, string newProcesso)
         {
+            var processExist = await _uow.ProcessoMaster.SingleOrDefault(x => x.NumeroProcesso == newProcesso);
+            if (processExist != null)
+            {
+                await this.UpdateProcessAsync(processExist);
+                throw new InvalidOperationException("Processo ja existe!");
+            }
+
+
             Advogado advogado = await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
+            var master = await _tribunalService.GetOnlineProcessData(newProcesso);
+
             await _uow.Processo.Add(new Processo {
                 Advogado = advogado,
                 Numero = newProcesso,
                 ProcessoId = new Guid(),
                 DataAdicionado = DateTime.Now,
                 Comarca = "A ser adicionado",
+                EscritorioId = advogado.EscritorioId,
+                ProcessoMasterId = master.ProcessoMasterId,
+                ProcessoMaster = master,
                 AdvogadoId = advogado.AdvogadoId
             });
             _uow.Complete();
 
-            await _tribunalService.GetOnlineProcessData(newProcesso);
-
         }
 
-        public async Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId)
+        public async Task UpdateProcessAsync(ProcessoMaster processo)
         {
-            return await _uow.Processo.GetAll(x => x.AdvogadoId == AdvogadoId);
+            await _tribunalService.UpdateProcess(processo);
+        }
+
+        public async Task<IEnumerable<Processo>> GetAllFromEscritorio(Guid userId)
+        {
+            var advogado = await _advogadoService.GetAdvogadoFromUserId(userId);
+            return await _uow.Processo.GetAll(x => x.Escritorio.EscritorioId == advogado.Escritorio.EscritorioId); 
+        }
+
+        public async Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid userId)
+        {
+            var advogado = await _advogadoService.GetAdvogadoFromUserId(userId);
+            return await _uow.Processo.GetAllAdvogadoInfos(advogado.AdvogadoId);
         }
 
     }

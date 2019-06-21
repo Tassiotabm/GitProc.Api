@@ -18,9 +18,11 @@ namespace GitProc.Services
             _uow = uow;
         }
 
-        public void SaveProcessoMaster(ProcessoMaster processo)
+        public async Task<ProcessoMaster> SaveProcessoMaster(ProcessoMaster processo)
         {
-            _uow.ProcessoMaster.Add(processo);
+            await _uow.ProcessoMaster.Add(processo);
+            _uow.Complete();
+            return processo;
         }
     }
 }

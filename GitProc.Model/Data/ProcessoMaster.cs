@@ -9,7 +9,7 @@ namespace GitProc.Model.Data
     public class ProcessoMaster
     {
         public Guid ProcessoMasterId { get; set; }
-        public string ProcessoId { get; set; }
+        public string NumeroProcesso { get; set; }
         public string Comarca { get; set; }
         public string Endereco { get; set; }
         public string Bairro { get; set; }
@@ -23,6 +23,7 @@ namespace GitProc.Model.Data
         public List<Movimento> Movimentos { get; set; }
         public DateTime DataVerificacao { get; set; }
         public DateTime DataDistribuicao { get; set; }        
+        public DateTime UpdatedDay { get; set; }
     }
 
     public class Movimento

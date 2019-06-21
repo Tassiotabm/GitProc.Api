@@ -46,12 +46,28 @@ namespace GitProc.Api.Controllers
             }
         }
 
+        // GET api/<controller>/5
+        [HttpGet("ByEscritorio/{userId}")]
+        public async Task<IActionResult> GetByEscritorio(Guid userId)
+        {
+            try
+            {
+                var List = await _processService.GetAllFromEscritorio(userId);
+                return Ok(List);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         // POST api/<controller>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ProcessModel Processo)
         {
             try
-            {
+            {                
                 await _processService.CreateProcessoAsync(Processo.UserId, Processo.IdProcesso);
                 return Ok();
             }catch(Exception ex)

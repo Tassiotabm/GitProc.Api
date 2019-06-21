@@ -12,7 +12,6 @@ namespace GitProc.Data
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<ProcessoMaster> ProcessoMaster { get; set; }
         public DbSet<Processo> Processos { get; set; }
-        public DbSet<ProcessoVersionado> ProcessoVersionados { get; set; }
         public DbSet<Escritorio> Escritorios { get; set; }
 
         public DomainDbContext(DbContextOptions<DomainDbContext> options) : base(options)
