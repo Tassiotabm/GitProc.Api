@@ -27,9 +27,7 @@ namespace GitProc.Services
         {
             try
             {
-                var master = new ProcessoMaster
-                {
-                };
+
                 ProcessoMaster processoMaster = new ProcessoMaster
                 {
                     ProcessoMasterId = new Guid(),
@@ -97,6 +95,9 @@ namespace GitProc.Services
                         }
                     }
                 }
+                var master = new ProcessoMaster
+                {
+                };
                 master = await _processoMasterService.SaveProcessoMaster(processoMaster);
                 return master;
 
@@ -106,13 +107,13 @@ namespace GitProc.Services
             }
         }
 
-        public async Task UpdateProcess(ProcessoMaster processo)
+        public async Task UpdateProcess(Guid processoMasterId, string ProcessNumber)
         {
             try
             {
-                var processoMaster = processo;
-
-                var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaProc.do?v=2&numProcesso=" + processo.NumeroProcesso;
+                var processoMaster = await _uow.ProcessoMaster.SingleOrDefault(x=> x.ProcessoMasterId == processoMasterId);
+                string url = processoMaster.NumeroProcesso != null ? processoMaster.NumeroProcesso : ProcessNumber;
+                var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaProc.do?v=2&numProcesso=" + url;
                 HtmlWeb web = new HtmlWeb();
                 var htmlDoc = web.Load(html);
 
@@ -152,7 +153,7 @@ namespace GitProc.Services
 
                                             var t1 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
                                             var t2 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path2).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                            processoMaster.Comarca = t1 + t2;
+                                            processoMaster.Comarca = convertedText + t1 + t2;
                                         }
                                         else if (convertedText.Contains("Endereço"))
                                             processoMaster.Endereco = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
@@ -174,7 +175,7 @@ namespace GitProc.Services
                         }
                     }
 
-
+                    _processoMasterService.UpdateProcessoMaster(processoMaster);
                 }
             }
             catch (HtmlWebException)

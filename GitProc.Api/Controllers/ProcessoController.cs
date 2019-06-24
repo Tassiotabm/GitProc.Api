@@ -77,9 +77,19 @@ namespace GitProc.Api.Controllers
         }
 
         // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut("updateProcess/")]
+        public async Task<IActionResult> Put([FromBody]UpdateMasterProcess processMaster)
         {
+            try
+            {
+                await _processService.UpdateProcessAsync(processMaster.ProcessMasterValue,processMaster.ProcessNumber);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+
+            }
         }
 
         // DELETE api/<controller>/5

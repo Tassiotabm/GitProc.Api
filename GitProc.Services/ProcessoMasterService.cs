@@ -1,10 +1,6 @@
 ﻿using GitProc.Data;
 using GitProc.Model.Data;
 using GitProc.Services.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GitProc.Services
@@ -23,6 +19,12 @@ namespace GitProc.Services
             await _uow.ProcessoMaster.Add(processo);
             _uow.Complete();
             return processo;
+        }
+
+        public void UpdateProcessoMaster(ProcessoMaster processo)
+        {        
+            _uow.ProcessoMaster.Attach(processo);
+            _uow.Complete();
         }
     }
 }

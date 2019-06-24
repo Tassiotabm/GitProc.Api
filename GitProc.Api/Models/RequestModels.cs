@@ -37,4 +37,10 @@ namespace GitProc.Api.Models
         public Guid UserId { get; set; }
         public string IdProcesso { get; set; }
     }
+
+    public class UpdateMasterProcess
+    {
+        public Guid ProcessMasterValue { get; set; }
+        public string ProcessNumber { get; set; }
+    }
 }

@@ -32,7 +32,7 @@ namespace GitProc.Services
             var processExist = await _uow.ProcessoMaster.SingleOrDefault(x => x.NumeroProcesso == newProcesso);
             if (processExist != null)
             {
-                await this.UpdateProcessAsync(processExist);
+                await this.UpdateProcessAsync(processExist.ProcessoMasterId, newProcesso);
                 throw new InvalidOperationException("Processo ja existe!");
             }
 
@@ -55,15 +55,15 @@ namespace GitProc.Services
 
         }
 
-        public async Task UpdateProcessAsync(ProcessoMaster processo)
+        public async Task UpdateProcessAsync(Guid processoMasterId, string processNumber)
         {
-            await _tribunalService.UpdateProcess(processo);
+            await _tribunalService.UpdateProcess(processoMasterId, processNumber);
         }
 
         public async Task<IEnumerable<Processo>> GetAllFromEscritorio(Guid userId)
         {
             var advogado = await _advogadoService.GetAdvogadoFromUserId(userId);
-            return await _uow.Processo.GetAll(x => x.Escritorio.EscritorioId == advogado.Escritorio.EscritorioId); 
+            return await _uow.Processo.GetAllEscrotorioInfo(advogado.Escritorio.EscritorioId);
         }
 
         public async Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid userId)
