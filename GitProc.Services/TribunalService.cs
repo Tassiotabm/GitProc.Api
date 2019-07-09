@@ -9,6 +9,7 @@ using System.Web;
 using System.Net;
 using System;
 using System.Collections.Generic;
+using GitProc.Services.Resources;
 
 namespace GitProc.Services
 {
@@ -113,7 +114,7 @@ namespace GitProc.Services
             {
                 var processoMaster = await _uow.ProcessoMaster.SingleOrDefault(x=> x.ProcessoMasterId == processoMasterId);
                 string url = processoMaster.NumeroProcesso != null ? processoMaster.NumeroProcesso : ProcessNumber;
-                var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaProc.do?v=2&numProcesso=" + url;
+                var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaMov.do?v=2&numProcesso=" + url + "&acessoIP=internet&tipoUsuario=";            
                 HtmlWeb web = new HtmlWeb();
                 var htmlDoc = web.Load(html);
 
@@ -153,7 +154,7 @@ namespace GitProc.Services
 
                                             var t1 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
                                             var t2 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path2).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                            processoMaster.Comarca = convertedText + t1 + t2;
+                                            processoMaster.Comarca = convertedText +   t1 + t2;
                                         }
                                         else if (convertedText.Contains("Endereço"))
                                             processoMaster.Endereco = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
@@ -169,6 +170,69 @@ namespace GitProc.Services
                                             processoMaster.Classe = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
                                         else if (convertedText.Contains("Advogado(s)"))
                                             processoMaster.Advogados = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                        else if (convertedText.Contains("Tipo do Movimento"))
+                                        {
+                                            int j = i;
+                                            var RegisteredUsers = new List<Resources.Movimento>();
+
+                                            while (true)
+                                            {
+                                                var text = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[j].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                var data = new Resources.Movimento
+                                                {
+                                                    MovimentoTitulo = text,
+                                                    MovimentoData = new List<string>(),
+                                                    MovimentoTag = new List<string>()
+                                                };
+                                                int y = j + 1;
+                                                bool fim = false;
+
+                                                while (true)
+                                                {
+                                                    while (node[y].ChildNodes.Count <= 3 && y <= node.Count)
+                                                    {
+                                                        y++;
+                                                        if (y == node.Count)
+                                                        {
+                                                            fim = true;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if (fim)
+                                                    {
+                                                        break;
+                                                    }
+                                                    var tag = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[y].XPath + "/td[1]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                    var tagData = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[y].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                    if (tag.Contains("Tipo do Movimento"))
+                                                    {
+                                                        j = y;
+                                                        break;
+                                                    }
+                                                    data.MovimentoTag.Add(tag);
+                                                    data.MovimentoData.Add(tagData);
+
+                                                    y++;
+                                                    if (node[y].ChildNodes.Count <= 1)
+                                                        y++;
+                                                }
+
+                                                if (fim)
+                                                {
+                                                    break;
+                                                }
+                                                RegisteredUsers.Add(data);
+
+                                                if (y == node.Count)
+                                                {
+                                                    j = y;
+                                                    break;
+                                                }
+                                            }
+                                            i = j;
+                                        }
+
                                     }
                                 }
                             }
