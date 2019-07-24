@@ -18,13 +18,16 @@ namespace GitProc.Api.Controllers
         private readonly IAdvogadoService _advogadoService;
         private readonly IEscritorioService _escritorioService;
         private readonly IProcessoService _processService;
+        private readonly IProcessoMasterService _processoMaster;
 
         public ProcessoController(
             IAdvogadoService advogadoService,
             IEscritorioService escritorioService,
             IUserService usuarioService,
+            IProcessoMasterService processoMaster,
             IProcessoService processoService)
         {
+            _processoMaster = processoMaster;
             _processService = processoService;
             _userService = usuarioService;
             _advogadoService = advogadoService;
@@ -75,6 +78,21 @@ namespace GitProc.Api.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpGet("Movimentos/{ProcessoId}")]
+        public async Task<IActionResult> Post(Guid ProcessoId)
+        {
+            try
+            {
+                var movimentos = await _processoMaster.GetMovimento(ProcessoId);
+                return Ok(movimentos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
 
         // PUT api/<controller>/5
         [HttpPut("updateProcess/")]

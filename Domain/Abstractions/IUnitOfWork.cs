@@ -12,6 +12,7 @@ namespace GitProc.Data
         IEscritorioRepository Escritorio { get; }
         IProcessoMasterRepository ProcessoMaster { get; }
         IProcessoRepository Processo{ get; }
+        IMovimentoRepository Movimento { get; }
 
         int Complete();
         Task<int> CompleteAsync();

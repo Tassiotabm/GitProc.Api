@@ -3,15 +3,17 @@ using System;
 using GitProc.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GitProc.Migrations.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    partial class DomainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190714163020_masterProcess")]
+    partial class masterProcess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,21 +90,21 @@ namespace GitProc.Migrations.Migrations
 
                     b.Property<DateTime>("Data");
 
-                    b.Property<string>("MovimentoData")
-                        .HasColumnType("jsonb");
+                    b.Property<string>("Descricao");
 
-                    b.Property<string>("MovimentoTag")
-                        .HasColumnType("jsonb");
+                    b.Property<string>("Localizacao");
 
-                    b.Property<string>("MovimentoTitulo");
+                    b.Property<Guid?>("ProcessoMasterId");
 
-                    b.Property<Guid>("ProcessMasterId");
+                    b.Property<string>("ProcessoNoTribunal");
+
+                    b.Property<string>("TipoMovimento");
 
                     b.HasKey("MovimentoId");
 
-                    b.HasIndex("ProcessMasterId");
+                    b.HasIndex("ProcessoMasterId");
 
-                    b.ToTable("Movimentos");
+                    b.ToTable("Movimento");
                 });
 
             modelBuilder.Entity("GitProc.Model.Data.Processo", b =>
@@ -201,10 +203,9 @@ namespace GitProc.Migrations.Migrations
 
             modelBuilder.Entity("GitProc.Model.Data.Movimento", b =>
                 {
-                    b.HasOne("GitProc.Model.Data.ProcessoMaster", "ProcessMaster")
-                        .WithMany()
-                        .HasForeignKey("ProcessMasterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("GitProc.Model.Data.ProcessoMaster")
+                        .WithMany("Movimentos")
+                        .HasForeignKey("ProcessoMasterId");
                 });
 
             modelBuilder.Entity("GitProc.Model.Data.Processo", b =>

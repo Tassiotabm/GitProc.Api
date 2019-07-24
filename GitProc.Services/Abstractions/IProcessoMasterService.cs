@@ -1,4 +1,5 @@
 ﻿using GitProc.Model.Data;
+using System;
 using System.Threading.Tasks;
 
 namespace GitProc.Services.Abstractions
@@ -7,5 +8,6 @@ namespace GitProc.Services.Abstractions
     {
         void UpdateProcessoMaster(ProcessoMaster processo);
         Task<ProcessoMaster> SaveProcessoMaster(ProcessoMaster processo);
+        Task<Movimento> GetMovimento(Guid processMasterId);
     }
 }

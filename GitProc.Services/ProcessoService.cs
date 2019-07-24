@@ -36,7 +36,7 @@ namespace GitProc.Services
                 throw new InvalidOperationException("Processo ja existe!");
             }
 
-
+            // CRIAR PROCESSO MASTER!!!!
             Advogado advogado = await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
             var master = await _tribunalService.GetOnlineProcessData(newProcesso);
 
@@ -53,6 +53,11 @@ namespace GitProc.Services
             });
             _uow.Complete();
 
+        }
+
+        public async Task SaveMovimento(List<Movimento> lista)
+        {
+            await _uow.Movimento.AddRange(lista);
         }
 
         public async Task UpdateProcessAsync(Guid processoMasterId, string processNumber)

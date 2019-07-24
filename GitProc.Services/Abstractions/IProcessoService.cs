@@ -13,5 +13,6 @@ namespace GitProc.Services.Abstractions
         Task UpdateProcessAsync(Guid processoMasterId, string processNumber);
         Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId);
         Task<IEnumerable<Processo>> GetAllFromEscritorio(Guid userId);
+        Task SaveMovimento(List<Movimento> lista);
     }
 }

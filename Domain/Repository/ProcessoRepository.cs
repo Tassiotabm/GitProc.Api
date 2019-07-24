@@ -16,12 +16,22 @@ namespace GitProc.Data.Repository
 
         public async Task<List<Processo>> GetAllAdvogadoInfos(Guid advogadoId)
         {
-            return await Context.Processos.Include(x => x.ProcessoMaster).Include(x=> x.Advogado).Include(x=> x.Escritorio).Where(x => x.AdvogadoId == advogadoId).ToListAsync();
+            return await Context
+                .Processos
+                .Include(x => x.ProcessoMaster)
+                .Include(x=> x.Advogado)
+                .Include(x=> x.Escritorio)
+                .Where(x => x.AdvogadoId == advogadoId).ToListAsync();
         }
 
         public async Task<List<Processo>> GetAllEscrotorioInfo(Guid escritorioId)
         {
-            return await Context.Processos.Include(x => x.ProcessoMaster).Include(x => x.Advogado).Include(x => x.Escritorio).Where(x => x.EscritorioId == escritorioId).ToListAsync();
+            return await Context
+                .Processos
+                .Include(x => x.ProcessoMaster)
+                .Include(x => x.Advogado)
+                .Include(x => x.Escritorio)
+                .Where(x => x.EscritorioId == escritorioId).ToListAsync();
         }
     }
 }

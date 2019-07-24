@@ -1,9 +1,5 @@
 ﻿using GitProc.Data.Repository;
 using GitProc.Data.Repository.Abstractions;
-using GitProc.Model.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GitProc.Data
@@ -20,6 +16,7 @@ namespace GitProc.Data
             Escritorio = new EscritorioRepository(_context);
             ProcessoMaster = new ProcessoMasterRepository(_context);
             Processo = new ProcessoRepository(_context);
+            Movimento = new MovimentoRepository(_context);
         }
 
         public IAdvogadoRepository Advogado { get; private set; }
@@ -27,6 +24,7 @@ namespace GitProc.Data
         public IEscritorioRepository Escritorio { get; private set; }
         public IProcessoMasterRepository ProcessoMaster { get; private set; }
         public IProcessoRepository Processo { get; private set; }
+        public IMovimentoRepository Movimento { get; private set; }
 
         public int Complete()
         {

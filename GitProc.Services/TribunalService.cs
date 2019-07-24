@@ -4,12 +4,10 @@ using HtmlAgilityPack;
 using GitProc.Model.Data;
 using GitProc.Services.Abstractions;
 using System.Text.RegularExpressions;
-using System.Text;
-using System.Web;
 using System.Net;
 using System;
 using System.Collections.Generic;
-using GitProc.Services.Resources;
+using Newtonsoft.Json;
 
 namespace GitProc.Services
 {
@@ -36,65 +34,135 @@ namespace GitProc.Services
                     NumeroProcesso = processoNumber
                 };
 
-                var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaProc.do?v=2&numProcesso="+ processoNumber;
+                var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaMov.do?v=2&numProcesso=" + processoNumber + "&acessoIP=internet&tipoUsuario=";
                 HtmlWeb web = new HtmlWeb();            
                 var htmlDoc = web.Load(html);
 
                 if (htmlDoc.DocumentNode.SelectSingleNode("//div[@id='container_captcha']") == null)
                 {
                     var table = htmlDoc.DocumentNode.SelectSingleNode("//form[@name='formResultado']//table");
-                    var node = table.ChildNodes;
-   
-                    for (var i = 0; i < node.Count; i++)
+                    if (table != null)
                     {
-                        if (node[i].Name != "#text")
-                        {
-                            foreach (HtmlNode child in node[i].ChildNodes)
-                            {
-                                if (child.Name != "#text")
-                                {
-                                    if (child.InnerText != "&nbsp;")
-                                    {
-                                        string convertedText = WebUtility.HtmlDecode(Regex.Replace(child.InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        if (convertedText.Contains(" As informações aqui contidas não produzem efeitos legais. Somente a publicação no DJERJ oficializa despachos e decisões e estabelece prazos."))
-                                        {
-                                        }
-                                        else if (convertedText.Contains("instância"))
-                                        {
-                                            var stringArray = convertedText.Split(" - ");
-                                            processoMaster.Tribunal = stringArray[0];
-                                            processoMaster.DataVerificacao = Convert.ToDateTime(stringArray[1]);
-                                            processoMaster.Instancia = stringArray[2];
-                                            processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 10));
-                                        }
-                                        else if (convertedText.Contains("Regional") || convertedText.Contains("Comarca"))
-                                        {
-                                            var path = node[i].XPath + "/td[2]";
-                                            var path2 = node[i + 1].NextSibling.XPath + "/td[2]";
+                        var node = table.ChildNodes;
 
-                                            var t1 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                            var t2 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path2).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                            processoMaster.Comarca = t1 + t2;
+                        for (var i = 0; i < node.Count; i++)
+                        {
+                            if (node[i].Name != "#text")
+                            {
+                                foreach (HtmlNode child in node[i].ChildNodes)
+                                {
+                                    if (child.Name != "#text")
+                                    {
+                                        if (child.InnerText != "&nbsp;")
+                                        {
+                                            string convertedText = WebUtility.HtmlDecode(Regex.Replace(child.InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            if (convertedText.Contains(" As informações aqui contidas não produzem efeitos legais. Somente a publicação no DJERJ oficializa despachos e decisões e estabelece prazos."))
+                                            {
+                                            }
+                                            else if (convertedText.Contains("instância"))
+                                            {
+                                                var stringArray = convertedText.Split(" - ");
+                                                processoMaster.Tribunal = stringArray[0];
+                                                processoMaster.DataVerificacao = Convert.ToDateTime(stringArray[1]);
+                                                processoMaster.Instancia = stringArray[2];
+                                                processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 10));
+                                            }
+                                            else if (convertedText.Contains("Regional") || convertedText.Contains("Comarca"))
+                                            {
+                                                var path = node[i].XPath + "/td[2]";
+                                                var path2 = node[i + 1].NextSibling.XPath + "/td[2]";
+
+                                                var t1 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                var t2 = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(path2).InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                processoMaster.Comarca = t1 + t2;
+                                            }
+                                            else if (convertedText.Contains("Endereço"))
+                                                processoMaster.Endereco = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Bairro"))
+                                                processoMaster.Bairro = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Cidade"))
+                                                processoMaster.Cidade = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Ação"))
+                                                processoMaster.Acao = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Assunto"))
+                                                processoMaster.Assunto = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Classe"))
+                                                processoMaster.Classe = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Advogado(s)"))
+                                                processoMaster.Advogados = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            else if (convertedText.Contains("Tipo do Movimento"))
+                                            {
+                                                int j = i;
+                                                var listaDeMovimentos = new List<Movimento>();
+                                                var contentTag = new List<string>();
+                                                var contentData = new List<string>();
+
+                                                while (true)
+                                                {
+                                                    var text = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[j].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                    var data = new Movimento
+                                                    {
+                                                        MovimentoTitulo = text,
+                                                        MovimentoData = "",
+                                                        MovimentoTag = "",
+                                                    };
+                                                    int y = j + 1;
+                                                    bool fim = false;
+
+                                                    while (true)
+                                                    {
+                                                        while (node[y].ChildNodes.Count <= 3 && y <= node.Count)
+                                                        {
+                                                            y++;
+                                                            if (y == node.Count)
+                                                            {
+                                                                fim = true;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (fim)
+                                                        {
+                                                            break;
+                                                        }
+                                                        var tag = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[y].XPath + "/td[1]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                        var tagData = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[y].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                                        if (tag.Contains("Tipo do Movimento"))
+                                                        {
+                                                            j = y;
+                                                            break;
+                                                        }
+                                                        contentTag.Add(tag);
+                                                        contentData.Add(tagData);
+
+                                                        y++;
+                                                        if (node[y].ChildNodes.Count <= 1)
+                                                            y++;
+                                                    }
+
+                                                    if (fim)
+                                                    {
+                                                        break;
+                                                    }
+                                                    listaDeMovimentos.Add(data);
+
+                                                    if (y == node.Count)
+                                                    {
+                                                        j = y;
+                                                        break;
+                                                    }
+                                                }
+                                                i = j;
+                                                await _uow.Movimento.AddRange(listaDeMovimentos);
+                                            }
+
                                         }
-                                        else if (convertedText.Contains("Endereço"))
-                                            processoMaster.Endereco = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        else if (convertedText.Contains("Bairro"))
-                                            processoMaster.Bairro = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        else if (convertedText.Contains("Cidade"))
-                                            processoMaster.Cidade = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        else if (convertedText.Contains("Ação"))
-                                            processoMaster.Acao = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        else if (convertedText.Contains("Assunto"))
-                                            processoMaster.Assunto = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        else if (convertedText.Contains("Classe"))
-                                            processoMaster.Classe = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                        else if (convertedText.Contains("Advogado(s)"))
-                                            processoMaster.Advogados = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[i].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
                                     }
                                 }
                             }
                         }
                     }
+
                 }
                 var master = new ProcessoMaster
                 {
@@ -117,6 +185,7 @@ namespace GitProc.Services
                 var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaMov.do?v=2&numProcesso=" + url + "&acessoIP=internet&tipoUsuario=";            
                 HtmlWeb web = new HtmlWeb();
                 var htmlDoc = web.Load(html);
+                processoMaster.UpdatedDay = DateTime.Now;
 
                 if (htmlDoc.DocumentNode.SelectSingleNode("//div[@id='container_captcha']") == null)
                 {
@@ -173,17 +242,20 @@ namespace GitProc.Services
                                         else if (convertedText.Contains("Tipo do Movimento"))
                                         {
                                             int j = i;
-                                            var RegisteredUsers = new List<Resources.Movimento>();
+                                            var contentTag = new List<string>();
+                                            var contentData = new List<string>();
+                                            var data = new Movimento
+                                            {
+                                                MovimentoTitulo = "",
+                                                MovimentoData = "",
+                                                MovimentoTag = "",
+                                                ProcessMasterId = processoMasterId
+                                            };
 
                                             while (true)
                                             {
-                                                var text = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[j].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                                var data = new Resources.Movimento
-                                                {
-                                                    MovimentoTitulo = text,
-                                                    MovimentoData = new List<string>(),
-                                                    MovimentoTag = new List<string>()
-                                                };
+                                                data.MovimentoTitulo = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[j].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+
                                                 int y = j + 1;
                                                 bool fim = false;
 
@@ -210,8 +282,8 @@ namespace GitProc.Services
                                                         j = y;
                                                         break;
                                                     }
-                                                    data.MovimentoTag.Add(tag);
-                                                    data.MovimentoData.Add(tagData);
+                                                    contentTag.Add(tag);
+                                                    contentData.Add(tagData);
 
                                                     y++;
                                                     if (node[y].ChildNodes.Count <= 1)
@@ -222,7 +294,8 @@ namespace GitProc.Services
                                                 {
                                                     break;
                                                 }
-                                                RegisteredUsers.Add(data);
+                                                data.MovimentoTag = JsonConvert.SerializeObject(contentTag);
+                                                data.MovimentoData = JsonConvert.SerializeObject(contentData);
 
                                                 if (y == node.Count)
                                                 {
@@ -231,6 +304,8 @@ namespace GitProc.Services
                                                 }
                                             }
                                             i = j;
+
+                                            await _uow.Movimento.Add(data);
                                         }
 
                                     }
@@ -238,7 +313,6 @@ namespace GitProc.Services
                             }
                         }
                     }
-
                     _processoMasterService.UpdateProcessoMaster(processoMaster);
                 }
             }
