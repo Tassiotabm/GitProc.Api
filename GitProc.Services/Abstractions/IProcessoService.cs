@@ -1,8 +1,7 @@
 ﻿using GitProc.Model.Data;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GitProc.Services.Abstractions
@@ -14,5 +13,6 @@ namespace GitProc.Services.Abstractions
         Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid AdvogadoId);
         Task<IEnumerable<Processo>> GetAllFromEscritorio(Guid userId);
         Task SaveMovimento(List<Movimento> lista);
+        Task AddProcesso(string comentario, string filePath, Processo processoData);
     }
 }

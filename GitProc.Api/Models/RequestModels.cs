@@ -1,4 +1,5 @@
 ﻿using GitProc.Model.Data;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,16 @@ namespace GitProc.Api.Models
     {
         public Guid UserId { get; set; }
         public string IdProcesso { get; set; }
+    }
+
+    public class NewProcessModel
+    {
+        public string Comentario { get; set; }
+        public IFormFile File { get; set; }
+        public Guid AdvogadoId { get; set; }
+        public Guid ProcessoMasterId { get; set; }
+        public Guid EscritorioID { get; set; }
+        public Guid ProcessoId { get; set; }
     }
 
     public class UpdateMasterProcess

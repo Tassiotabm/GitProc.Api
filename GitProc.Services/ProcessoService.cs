@@ -1,8 +1,10 @@
 ﻿using GitProc.Data;
 using GitProc.Model.Data;
 using GitProc.Services.Abstractions;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +27,39 @@ namespace GitProc.Services
             _advogadoService = advogadoService;
             _escritorioService = escritorioService;
             _tribunalService = tribunalService;
+        }
+
+        public async Task AddProcesso(string comentario, string filePath, Processo processoData)
+        {
+            var processo = new Processo();
+            if (processoData.ProcessoId == null || processoData.ProcessoId == Guid.Empty)
+            {
+                var newGuid = Guid.NewGuid();
+                await _uow.Processo.Add(new Processo
+                {
+                    ProcessoId = newGuid,
+                    AdvogadoId = processoData.AdvogadoId,
+                    EscritorioId = processoData.EscritorioId,
+                    ProcessoMasterId = processoData.ProcessoMasterId,
+                    DataAdicionado = DateTime.Now,
+                    Numero = processoData.Numero
+                });
+                _uow.Complete();
+
+                processo = await _uow.Processo.SingleOrDefault(x => x.ProcessoId == newGuid);
+            }
+            else
+            {
+                processo = await _uow.Processo.SingleOrDefault(x => x.ProcessoId == processoData.ProcessoId);
+            }
+
+            await _uow.Comentario.Add(new Comentario {
+                    ComentarioData = comentario,
+                    File = System.IO.File.ReadAllBytes(filePath),
+                    ProcessoId = processo.ProcessoId,                    
+            });
+            _uow.Complete();
+
         }
 
         public async Task CreateProcessoAsync(Guid userId, string newProcesso)

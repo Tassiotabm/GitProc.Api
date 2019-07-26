@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GitProc.Api.Models;
+using GitProc.Model.Data;
 using GitProc.Services;
 using GitProc.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +77,42 @@ namespace GitProc.Api.Controllers
                 await _processService.CreateProcessoAsync(Processo.UserId, Processo.IdProcesso);
                 return Ok();
             }catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPost("Add")]
+        public async Task<IActionResult> PostAddProcess([FromForm]NewProcessModel formData)
+        {
+            try
+            {
+                var file = Request.Form.Files[0];
+                var folderName = Path.Combine("Resources", "Images");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                if (file.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    var dbPath = Path.Combine(folderName, fileName);
+
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    await _processService.AddProcesso(formData.Comentario, fullPath, new Processo
+                    {
+                        AdvogadoId = formData.AdvogadoId,
+                        EscritorioId = formData.EscritorioID,
+                        ProcessoMasterId = formData.ProcessoMasterId,
+                        ProcessoId = formData.ProcessoId
+                    });
+                }
+                return Ok();
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex);
             }

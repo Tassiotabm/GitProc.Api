@@ -17,6 +17,7 @@ namespace GitProc.Data
             ProcessoMaster = new ProcessoMasterRepository(_context);
             Processo = new ProcessoRepository(_context);
             Movimento = new MovimentoRepository(_context);
+            Comentario = new ComentarioRepository(_context);
         }
 
         public IAdvogadoRepository Advogado { get; private set; }
@@ -25,6 +26,7 @@ namespace GitProc.Data
         public IProcessoMasterRepository ProcessoMaster { get; private set; }
         public IProcessoRepository Processo { get; private set; }
         public IMovimentoRepository Movimento { get; private set; }
+        public IComentarioRepository Comentario { get; private set; }
 
         public int Complete()
         {

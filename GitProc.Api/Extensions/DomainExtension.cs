@@ -23,6 +23,7 @@ namespace GitProc.Api.Extensions
             services.AddScoped<ITribunalService, TribunalService>();
             services.AddScoped<IProcessoMasterService, ProcessoMasterService>();
             services.AddScoped<IMovimentoRepository, MovimentoRepository>();
+            services.AddScoped<IComentarioRepository, ComentarioRepository>();
         }
     }
 }
