@@ -1,4 +1,5 @@
 ﻿using GitProc.Data;
+using GitProc.Data.Repository.Model;
 using GitProc.Model.Data;
 using GitProc.Services.Abstractions;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace GitProc.Services
         private readonly IUnitOfWork _uow;
         private readonly ITribunalService _tribunalService;
         private readonly IEscritorioService _escritorioService;
-        private readonly IAdvogadoService _advogadoService;        
+        private readonly IAdvogadoService _advogadoService;
 
         public ProcessoService(IUnitOfWork uow,
             IEscritorioService escritorioService,
@@ -55,11 +56,22 @@ namespace GitProc.Services
 
             await _uow.Comentario.Add(new Comentario {
                     ComentarioData = comentario,
+                    AdvogadoId = processoData.AdvogadoId,
                     File = System.IO.File.ReadAllBytes(filePath),
                     ProcessoId = processo.ProcessoId,                    
             });
             _uow.Complete();
 
+        }
+
+        public async Task<IEnumerable<Comentario>> GetComentarios(Guid processId)
+        {
+            return await _uow.Comentario.GetAll(x => x.ProcessoId == processId);
+        }
+
+        public async Task<IEnumerable<ProcessoData>> GetProcessos(Guid processoMasterId)
+        {            
+            return await _uow.Processo.GetAllProcesso(processoMasterId);
         }
 
         public async Task CreateProcessoAsync(Guid userId, string newProcesso)
@@ -73,21 +85,7 @@ namespace GitProc.Services
 
             // CRIAR PROCESSO MASTER!!!!
             Advogado advogado = await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
-            var master = await _tribunalService.GetOnlineProcessData(newProcesso);
-
-            await _uow.Processo.Add(new Processo {
-                Advogado = advogado,
-                Numero = newProcesso,
-                ProcessoId = new Guid(),
-                DataAdicionado = DateTime.Now,
-                Comarca = "A ser adicionado",
-                EscritorioId = advogado.EscritorioId,
-                ProcessoMasterId = master.ProcessoMasterId,
-                ProcessoMaster = master,
-                AdvogadoId = advogado.AdvogadoId
-            });
-            _uow.Complete();
-
+            await _tribunalService.GetOnlineProcessData(newProcesso, advogado.AdvogadoId);
         }
 
         public async Task SaveMovimento(List<Movimento> lista)
@@ -100,13 +98,13 @@ namespace GitProc.Services
             await _tribunalService.UpdateProcess(processoMasterId, processNumber);
         }
 
-        public async Task<IEnumerable<Processo>> GetAllFromEscritorio(Guid userId)
+        public async Task<IEnumerable<ProcessoMaster>> GetAllFromEscritorio(Guid userId)
         {
             var advogado = await _advogadoService.GetAdvogadoFromUserId(userId);
             return await _uow.Processo.GetAllEscrotorioInfo(advogado.Escritorio.EscritorioId);
         }
 
-        public async Task<IEnumerable<Processo>> GetAllFromAdvogado(Guid userId)
+        public async Task<IEnumerable<ProcessoMaster>> GetAllFromAdvogado(Guid userId)
         {
             var advogado = await _advogadoService.GetAdvogadoFromUserId(userId);
             return await _uow.Processo.GetAllAdvogadoInfos(advogado.AdvogadoId);

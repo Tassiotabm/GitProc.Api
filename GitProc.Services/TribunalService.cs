@@ -22,7 +22,7 @@ namespace GitProc.Services
             _processoMasterService = processoMasterService;
         }
 
-        public async Task<ProcessoMaster> GetOnlineProcessData(string processoNumber)
+        public async Task<ProcessoMaster> GetOnlineProcessData(string processoNumber, Guid AdvogadoId)
         {
             try
             {
@@ -31,12 +31,16 @@ namespace GitProc.Services
                 {
                     ProcessoMasterId = new Guid(),
                     UpdatedDay = DateTime.Now,
-                    NumeroProcesso = processoNumber
+                    NumeroProcesso = processoNumber,
+                    AdvogadoId = AdvogadoId
                 };
 
                 var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaMov.do?v=2&numProcesso=" + processoNumber + "&acessoIP=internet&tipoUsuario=";
                 HtmlWeb web = new HtmlWeb();            
                 var htmlDoc = web.Load(html);
+                var master = new ProcessoMaster
+                {
+                };
 
                 if (htmlDoc.DocumentNode.SelectSingleNode("//div[@id='container_captcha']") == null)
                 {
@@ -96,16 +100,15 @@ namespace GitProc.Services
                                                 var listaDeMovimentos = new List<Movimento>();
                                                 var contentTag = new List<string>();
                                                 var contentData = new List<string>();
-
+                                                var data = new Movimento
+                                                {
+                                                    MovimentoData = "",
+                                                    MovimentoTag = "",
+                                                };
                                                 while (true)
                                                 {
-                                                    var text = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[j].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
-                                                    var data = new Movimento
-                                                    {
-                                                        MovimentoTitulo = text,
-                                                        MovimentoData = "",
-                                                        MovimentoTag = "",
-                                                    };
+                                                    data.MovimentoTitulo = WebUtility.HtmlDecode(Regex.Replace(htmlDoc.DocumentNode.SelectSingleNode(node[j].XPath + "/td[2]").InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+
                                                     int y = j + 1;
                                                     bool fim = false;
 
@@ -144,7 +147,8 @@ namespace GitProc.Services
                                                     {
                                                         break;
                                                     }
-                                                    listaDeMovimentos.Add(data);
+                                                    data.MovimentoTag = JsonConvert.SerializeObject(contentTag);
+                                                    data.MovimentoData = JsonConvert.SerializeObject(contentData);
 
                                                     if (y == node.Count)
                                                     {
@@ -153,7 +157,11 @@ namespace GitProc.Services
                                                     }
                                                 }
                                                 i = j;
-                                                await _uow.Movimento.AddRange(listaDeMovimentos);
+
+                                                master = await _processoMasterService.SaveProcessoMaster(processoMaster);
+                                                data.ProcessMasterId = master.ProcessoMasterId;
+                                                await _uow.Movimento.Add(data);
+                                                _uow.Complete();
                                             }
 
                                         }
@@ -164,10 +172,7 @@ namespace GitProc.Services
                     }
 
                 }
-                var master = new ProcessoMaster
-                {
-                };
-                master = await _processoMasterService.SaveProcessoMaster(processoMaster);
+
                 return master;
 
             } catch(HtmlWebException)
@@ -306,6 +311,7 @@ namespace GitProc.Services
                                             i = j;
 
                                             await _uow.Movimento.Add(data);
+                                            _uow.Complete();
                                         }
 
                                     }
@@ -314,6 +320,7 @@ namespace GitProc.Services
                         }
                     }
                     _processoMasterService.UpdateProcessoMaster(processoMaster);
+                    _uow.Complete();
                 }
             }
             catch (HtmlWebException)

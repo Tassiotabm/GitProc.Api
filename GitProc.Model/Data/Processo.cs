@@ -17,6 +17,6 @@ namespace GitProc.Model.Data
         public string Comarca { get; set; }
         public DateTime DataAdicionado { get; set; }
         public ProcessoMaster ProcessoMaster { get; set; }
-        public Guid? ProcessoMasterId { get; set; }
+        public Guid ProcessoMasterId { get; set; }
     }
 }

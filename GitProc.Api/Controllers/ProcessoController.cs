@@ -67,7 +67,6 @@ namespace GitProc.Api.Controllers
             }
         }
 
-
         // POST api/<controller>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]ProcessModel Processo)
@@ -83,7 +82,7 @@ namespace GitProc.Api.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> PostAddProcess([FromForm]NewProcessModel formData)
+        public async Task<IActionResult> AddComentario([FromForm]NewProcessModel formData)
         {
             try
             {
@@ -119,7 +118,7 @@ namespace GitProc.Api.Controllers
         }
 
         [HttpGet("Movimentos/{ProcessoId}")]
-        public async Task<IActionResult> Post(Guid ProcessoId)
+        public async Task<IActionResult> GetMovimentos(Guid ProcessoId)
         {
             try
             {
@@ -132,6 +131,33 @@ namespace GitProc.Api.Controllers
             }
         }
 
+        [HttpGet("Comentarios/{ProcessoId}")]
+        public async Task<IActionResult> GetComentarios(Guid ProcessoId)
+        {
+            try
+            {
+                var movimentos = await _processService.GetComentarios(ProcessoId);
+                return Ok(movimentos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpGet("Processos/{ProcessoMasterId}")]
+        public async Task<IActionResult> GetProcessos(Guid ProcessoMasterId)
+        {
+            try
+            {
+                var movimentos = await _processService.GetProcessos(ProcessoMasterId);
+                return Ok(movimentos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
         // PUT api/<controller>/5
         [HttpPut("updateProcess/")]
@@ -149,10 +175,6 @@ namespace GitProc.Api.Controllers
             }
         }
 
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        
     }
 }

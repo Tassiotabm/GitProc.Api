@@ -8,7 +8,6 @@ namespace GitProc.Data
     {
         public DbSet<Advogado> Advogados { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Arquivos> Arquivos { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<ProcessoMaster> ProcessoMaster { get; set; }
         public DbSet<Processo> Processos { get; set; }

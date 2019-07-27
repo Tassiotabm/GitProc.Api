@@ -1,4 +1,5 @@
-﻿using GitProc.Model.Data;
+﻿using GitProc.Data.Repository.Model;
+using GitProc.Model.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,33 @@ namespace GitProc.Data.Repository
 
         }
 
-        public async Task<List<Processo>> GetAllAdvogadoInfos(Guid advogadoId)
+        public async Task<List<ProcessoData>> GetAllProcesso(Guid processMasterId)
         {
             return await Context
                 .Processos
-                .Include(x => x.ProcessoMaster)
+                .Where(x => x.ProcessoMasterId == processMasterId)
+                .Join(Context.Comentarios,e=> e.ProcessoId,p=> p.ProcessoId,(p,e) => new ProcessoData
+                {
+                    Processo =  p,
+                    Comentario = e
+                } )                
+                .ToListAsync();
+        }
+
+        public async Task<List<ProcessoMaster>> GetAllAdvogadoInfos(Guid advogadoId)
+        {
+            return await Context
+                .ProcessoMaster
                 .Include(x=> x.Advogado)
-                .Include(x=> x.Escritorio)
                 .Where(x => x.AdvogadoId == advogadoId).ToListAsync();
         }
 
-        public async Task<List<Processo>> GetAllEscrotorioInfo(Guid escritorioId)
+        public async Task<List<ProcessoMaster>> GetAllEscrotorioInfo(Guid escritorioId)
         {
             return await Context
-                .Processos
-                .Include(x => x.ProcessoMaster)
+                .ProcessoMaster
                 .Include(x => x.Advogado)
-                .Include(x => x.Escritorio)
-                .Where(x => x.EscritorioId == escritorioId).ToListAsync();
+                .Where(x => x.Advogado.EscritorioId == escritorioId).ToListAsync();
         }
     }
 }

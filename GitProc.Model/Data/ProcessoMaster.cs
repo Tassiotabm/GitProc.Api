@@ -21,6 +21,8 @@ namespace GitProc.Model.Data
         public string Advogados { get; set; }
         public string Instancia { get; set; }
         public string Tribunal { get; set; }
+        public Advogado Advogado { get; set; }
+        public Guid? AdvogadoId { get; set; }
         public DateTime DataVerificacao { get; set; }
         public DateTime DataDistribuicao { get; set; }        
         public DateTime UpdatedDay { get; set; }

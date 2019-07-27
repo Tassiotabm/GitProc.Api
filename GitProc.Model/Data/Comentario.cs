@@ -14,5 +14,7 @@ namespace GitProc.Model.Data
         public Guid ProcessoId { get; set; }
         public byte[] File { get; set; }
         public DateTime DataCriado { get; set; }
+        public Advogado Advogado { get; set; }
+        public Guid? AdvogadoId { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using GitProc.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GitProc.Migrations.Migrations
 {
     [DbContext(typeof(DomainDbContext))]
-    partial class DomainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190727064555_addAdvogadoToProcMaster")]
+    partial class addAdvogadoToProcMaster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +43,16 @@ namespace GitProc.Migrations.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Advogados");
+                });
+
+            modelBuilder.Entity("GitProc.Model.Data.Arquivos", b =>
+                {
+                    b.Property<Guid>("ArquivosId")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("ArquivosId");
+
+                    b.ToTable("Arquivos");
                 });
 
             modelBuilder.Entity("GitProc.Model.Data.Comentario", b =>
@@ -114,7 +126,7 @@ namespace GitProc.Migrations.Migrations
                     b.Property<Guid>("ProcessoId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("AdvogadoId");
+                    b.Property<Guid>("AdvogadoId");
 
                     b.Property<string>("Comarca");
 
@@ -144,7 +156,7 @@ namespace GitProc.Migrations.Migrations
 
                     b.Property<string>("Acao");
 
-                    b.Property<Guid?>("AdvogadoId");
+                    b.Property<Guid>("AdvogadoId");
 
                     b.Property<string>("Advogados");
 
@@ -231,7 +243,8 @@ namespace GitProc.Migrations.Migrations
                 {
                     b.HasOne("GitProc.Model.Data.Advogado", "Advogado")
                         .WithMany()
-                        .HasForeignKey("AdvogadoId");
+                        .HasForeignKey("AdvogadoId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GitProc.Model.Data.Escritorio", "Escritorio")
                         .WithMany()
@@ -247,7 +260,8 @@ namespace GitProc.Migrations.Migrations
                 {
                     b.HasOne("GitProc.Model.Data.Advogado", "Advogado")
                         .WithMany()
-                        .HasForeignKey("AdvogadoId");
+                        .HasForeignKey("AdvogadoId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
