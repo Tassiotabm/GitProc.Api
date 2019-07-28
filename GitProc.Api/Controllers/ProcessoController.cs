@@ -92,7 +92,7 @@ namespace GitProc.Api.Controllers
                 var path = "";
                 if (file != null)
                 {
-                    var folderName = Path.Combine("resources", "Images");
+                    var folderName = Path.Combine("resources", "images");
                     var pathToSave = Path.Combine("../../../../var/www/GitProc/", folderName);
                     //var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
