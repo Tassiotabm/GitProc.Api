@@ -15,16 +15,22 @@ namespace GitProc.Data.Repository
 
         }
 
-        public async Task<List<ProcessoData>> GetAllProcesso(Guid processMasterId)
+        public async Task<List<Comentario>> GetComentarios(Guid processId) //Refazer
+        {
+            return await Context
+                .Comentarios
+                .Include(x => x.Advogado)
+                .Where(x => x.ProcessoId == processId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Processo>> GetAllProcesso(Guid processMasterId) //Refazer
         {
             return await Context
                 .Processos
-                .Where(x => x.ProcessoMasterId == processMasterId)
-                .Join(Context.Comentarios,e=> e.ProcessoId,p=> p.ProcessoId,(p,e) => new ProcessoData
-                {
-                    Processo =  p,
-                    Comentario = e
-                } )                
+                .Include(x=> x.Advogado)
+                .Include(x=> x.Escritorio)
+                .Where(x => x.ProcessoMasterId == processMasterId)              
                 .ToListAsync();
         }
 

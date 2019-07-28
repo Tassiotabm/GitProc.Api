@@ -13,6 +13,8 @@ namespace GitProc.Model.Data
         public Processo Processo { get; set; }
         public Guid ProcessoId { get; set; }
         public byte[] File { get; set; }
+        public string FileName { get; set; }
+        public string FileFormat { get; set; }
         public DateTime DataCriado { get; set; }
         public Advogado Advogado { get; set; }
         public Guid? AdvogadoId { get; set; }

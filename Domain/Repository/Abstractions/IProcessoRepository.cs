@@ -10,7 +10,8 @@ namespace GitProc.Data.Repository
     public interface IProcessoRepository : IRepository<Processo>
     {
         Task<List<ProcessoMaster>> GetAllAdvogadoInfos(Guid advogadoId);
-        Task<List<ProcessoData>> GetAllProcesso(Guid processMasterId);
+        Task<List<Processo>> GetAllProcesso(Guid processMasterId);
         Task<List<ProcessoMaster>> GetAllEscrotorioInfo(Guid escritorioId);
+        Task<List<Comentario>> GetComentarios(Guid processId);
     }
 }

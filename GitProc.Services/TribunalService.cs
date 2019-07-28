@@ -22,7 +22,7 @@ namespace GitProc.Services
             _processoMasterService = processoMasterService;
         }
 
-        public async Task<ProcessoMaster> GetOnlineProcessData(string processoNumber, Guid AdvogadoId)
+        public async Task<ProcessoMaster> GetOnlineProcessData(string processoNumber, Guid AdvogadoId, string nick)
         {
             try
             {
@@ -32,7 +32,8 @@ namespace GitProc.Services
                     ProcessoMasterId = new Guid(),
                     UpdatedDay = DateTime.Now,
                     NumeroProcesso = processoNumber,
-                    AdvogadoId = AdvogadoId
+                    AdvogadoId = AdvogadoId,
+                    Nick = nick
                 };
 
                 var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaMov.do?v=2&numProcesso=" + processoNumber + "&acessoIP=internet&tipoUsuario=";
@@ -181,7 +182,7 @@ namespace GitProc.Services
             }
         }
 
-        public async Task UpdateProcess(Guid processoMasterId, string ProcessNumber)
+        public async Task UpdateProcess(Guid processoMasterId, string ProcessNumber, string nick)
         {
             try
             {

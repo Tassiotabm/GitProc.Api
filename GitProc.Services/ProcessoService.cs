@@ -43,7 +43,7 @@ namespace GitProc.Services
                     EscritorioId = processoData.EscritorioId,
                     ProcessoMasterId = processoData.ProcessoMasterId,
                     DataAdicionado = DateTime.Now,
-                    Numero = processoData.Numero
+                    Nick = processoData.Nick
                 });
                 _uow.Complete();
 
@@ -57,7 +57,8 @@ namespace GitProc.Services
             await _uow.Comentario.Add(new Comentario {
                     ComentarioData = comentario,
                     AdvogadoId = processoData.AdvogadoId,
-                    File = System.IO.File.ReadAllBytes(filePath),
+                    File = filePath != "" ? System.IO.File.ReadAllBytes(filePath) : null,
+                    FileName = filePath != ""? filePath : null,
                     ProcessoId = processo.ProcessoId,                    
             });
             _uow.Complete();
@@ -66,26 +67,26 @@ namespace GitProc.Services
 
         public async Task<IEnumerable<Comentario>> GetComentarios(Guid processId)
         {
-            return await _uow.Comentario.GetAll(x => x.ProcessoId == processId);
+            return await _uow.Processo.GetComentarios(processId);
         }
 
-        public async Task<IEnumerable<ProcessoData>> GetProcessos(Guid processoMasterId)
+        public async Task<IEnumerable<Processo>> GetProcessos(Guid processoMasterId)
         {            
             return await _uow.Processo.GetAllProcesso(processoMasterId);
         }
 
-        public async Task CreateProcessoAsync(Guid userId, string newProcesso)
+        public async Task AddProcessMaster(Guid userId, string newProcesso, string nick)
         {
             var processExist = await _uow.ProcessoMaster.SingleOrDefault(x => x.NumeroProcesso == newProcesso);
             if (processExist != null)
             {
-                await this.UpdateProcessAsync(processExist.ProcessoMasterId, newProcesso);
+                await this.UpdateProcessAsync(processExist.ProcessoMasterId, newProcesso, nick);
                 throw new InvalidOperationException("Processo ja existe!");
             }
 
             // CRIAR PROCESSO MASTER!!!!
             Advogado advogado = await _uow.Advogado.SingleOrDefault(x => x.UsuarioId == userId);
-            await _tribunalService.GetOnlineProcessData(newProcesso, advogado.AdvogadoId);
+            await _tribunalService.GetOnlineProcessData(newProcesso, advogado.AdvogadoId, nick);
         }
 
         public async Task SaveMovimento(List<Movimento> lista)
@@ -93,9 +94,9 @@ namespace GitProc.Services
             await _uow.Movimento.AddRange(lista);
         }
 
-        public async Task UpdateProcessAsync(Guid processoMasterId, string processNumber)
+        public async Task UpdateProcessAsync(Guid processoMasterId, string processNumber,string nick)
         {
-            await _tribunalService.UpdateProcess(processoMasterId, processNumber);
+            await _tribunalService.UpdateProcess(processoMasterId, processNumber, nick);
         }
 
         public async Task<IEnumerable<ProcessoMaster>> GetAllFromEscritorio(Guid userId)

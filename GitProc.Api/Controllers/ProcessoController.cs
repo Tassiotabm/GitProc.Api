@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GitProc.Api.Models;
 using GitProc.Model.Data;
 using GitProc.Services;
 using GitProc.Services.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -39,7 +41,7 @@ namespace GitProc.Api.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(Guid userId)
+        public async Task<IActionResult> GetProcessMasterByAdvogado(Guid userId)
         {
             try
             {
@@ -54,7 +56,7 @@ namespace GitProc.Api.Controllers
 
         // GET api/<controller>/5
         [HttpGet("ByEscritorio/{userId}")]
-        public async Task<IActionResult> GetByEscritorio(Guid userId)
+        public async Task<IActionResult> GetProcessMasterByEscritorio(Guid userId)
         {
             try
             {
@@ -73,7 +75,7 @@ namespace GitProc.Api.Controllers
         {
             try
             {                
-                await _processService.CreateProcessoAsync(Processo.UserId, Processo.IdProcesso);
+                await _processService.AddProcessMaster(Processo.UserId, Processo.IdProcesso, Processo.Nick);
                 return Ok();
             }catch(Exception ex)
             {
@@ -86,29 +88,31 @@ namespace GitProc.Api.Controllers
         {
             try
             {
-                var file = Request.Form.Files[0];
-                var folderName = Path.Combine("Resources", "Images");
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-                if (file.Length > 0)
+                var file = Request.Form.Files.Count > 0 ? Request.Form.Files[0]: null;
+                var path = "";
+                if (file != null)
                 {
+                    var folderName = Path.Combine("Resources", "Images");
+                    var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
                     var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
-
+                    path = fullPath;
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
                         file.CopyTo(stream);
                     }
-
-                    await _processService.AddProcesso(formData.Comentario, fullPath, new Processo
-                    {
-                        AdvogadoId = formData.AdvogadoId,
-                        EscritorioId = formData.EscritorioID,
-                        ProcessoMasterId = formData.ProcessoMasterId,
-                        ProcessoId = formData.ProcessoId
-                    });
                 }
+
+                await _processService.AddProcesso(formData.Comentario, path, new Processo
+                {
+                    AdvogadoId = formData.AdvogadoId,
+                    EscritorioId = formData.EscritorioID,
+                    ProcessoMasterId = formData.ProcessoMasterId,
+                    ProcessoId = formData.ProcessoId,
+                    Nick = formData.Nick
+                });
+
                 return Ok();
             }
             catch (Exception ex)
@@ -145,7 +149,7 @@ namespace GitProc.Api.Controllers
             }
         }
 
-        [HttpGet("Processos/{ProcessoMasterId}")]
+        [HttpGet("AllProcessos/{ProcessoMasterId}")]
         public async Task<IActionResult> GetProcessos(Guid ProcessoMasterId)
         {
             try
@@ -161,11 +165,11 @@ namespace GitProc.Api.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("updateProcess/")]
-        public async Task<IActionResult> Put([FromBody]UpdateMasterProcess processMaster)
+        public async Task<IActionResult> Put([FromBody]UpdateMasterProcess proc)
         {
             try
             {
-                await _processService.UpdateProcessAsync(processMaster.ProcessMasterValue,processMaster.ProcessNumber);
+                await _processService.UpdateProcessAsync(proc.ProcessMasterValue,proc.ProcessNumber, proc.Nick);
                 return Ok();
             }
             catch(Exception ex)

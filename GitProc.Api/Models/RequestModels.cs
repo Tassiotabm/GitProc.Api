@@ -35,6 +35,7 @@ namespace GitProc.Api.Models
 
     public class ProcessModel
     {
+        public string Nick { get; set; }
         public Guid UserId { get; set; }
         public string IdProcesso { get; set; }
     }
@@ -42,6 +43,7 @@ namespace GitProc.Api.Models
     public class NewProcessModel
     {
         public string Comentario { get; set; }
+        public string Nick { get; set; }
         public IFormFile File { get; set; }
         public Guid AdvogadoId { get; set; }
         public Guid ProcessoMasterId { get; set; }
@@ -51,6 +53,7 @@ namespace GitProc.Api.Models
 
     public class UpdateMasterProcess
     {
+        public string Nick { get; set; }
         public Guid ProcessMasterValue { get; set; }
         public string ProcessNumber { get; set; }
     }

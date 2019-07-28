@@ -10,12 +10,12 @@ namespace GitProc.Services.Abstractions
     public interface IProcessoService
     {
         Task<IEnumerable<ProcessoMaster>> GetAllFromAdvogado(Guid userId);
-        Task CreateProcessoAsync(Guid userId, string newProcesso);
-        Task UpdateProcessAsync(Guid processoMasterId, string processNumber);
+        Task AddProcessMaster(Guid userId, string newProcesso, string nick);
+        Task UpdateProcessAsync(Guid processoMasterId, string processNumber, string nick);
         Task SaveMovimento(List<Movimento> lista);
         Task AddProcesso(string comentario, string filePath, Processo processoData);
         Task<IEnumerable<ProcessoMaster>> GetAllFromEscritorio(Guid userId);
         Task<IEnumerable<Comentario>> GetComentarios(Guid processId);
-        Task<IEnumerable<ProcessoData>> GetProcessos(Guid processoMasterId);
+        Task<IEnumerable<Processo>> GetProcessos(Guid processoMasterId);
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GitProc.Data.Repository.Model
 {
-    public class ProcessoData
+    public class Process
     {
         public Comentario Comentario { get; set; }
         public Processo Processo { get; set; }
