@@ -30,7 +30,7 @@ namespace GitProc.Services
             _tribunalService = tribunalService;
         }
 
-        public async Task AddProcesso(string comentario, string filePath, Processo processoData)
+        public async Task AddProcesso(string comentario, string filePath, Processo processoData, string FileName)
         {
             var processo = new Processo();
             if (processoData.ProcessoId == null || processoData.ProcessoId == Guid.Empty)
@@ -58,7 +58,7 @@ namespace GitProc.Services
                     ComentarioData = comentario,
                     AdvogadoId = processoData.AdvogadoId,
                     File = filePath != "" ? System.IO.File.ReadAllBytes(filePath) : null,
-                    FileName = filePath != ""? filePath : null,
+                    FileName = FileName != ""? FileName : null,
                     ProcessoId = processo.ProcessoId,                    
             });
             _uow.Complete();

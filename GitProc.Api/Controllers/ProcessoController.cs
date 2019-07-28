@@ -90,6 +90,7 @@ namespace GitProc.Api.Controllers
             {
                 var file = Request.Form.Files.Count > 0 ? Request.Form.Files[0]: null;
                 var path = "";
+                var name = "";
                 if (file != null)
                 {
                     var folderName = Path.Combine("resources", "images");
@@ -98,7 +99,8 @@ namespace GitProc.Api.Controllers
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
                     var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
-                    path = dbPath;
+                    path = fullPath;
+                    name = dbPath;
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
                         file.CopyTo(stream);
@@ -112,7 +114,7 @@ namespace GitProc.Api.Controllers
                     ProcessoMasterId = formData.ProcessoMasterId,
                     ProcessoId = formData.ProcessoId,
                     Nick = formData.Nick
-                });
+                }, name);
 
                 return Ok();
             }

@@ -13,7 +13,7 @@ namespace GitProc.Services.Abstractions
         Task AddProcessMaster(Guid userId, string newProcesso, string nick);
         Task UpdateProcessAsync(Guid processoMasterId, string processNumber, string nick);
         Task SaveMovimento(List<Movimento> lista);
-        Task AddProcesso(string comentario, string filePath, Processo processoData);
+        Task AddProcesso(string comentario, string filePath, Processo processoData, string fileName);
         Task<IEnumerable<ProcessoMaster>> GetAllFromEscritorio(Guid userId);
         Task<IEnumerable<Comentario>> GetComentarios(Guid processId);
         Task<IEnumerable<Processo>> GetProcessos(Guid processoMasterId);
