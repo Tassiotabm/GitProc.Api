@@ -8,6 +8,8 @@ using System.Net;
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Web;
+using System.Text;
 
 namespace GitProc.Services
 {
@@ -35,9 +37,13 @@ namespace GitProc.Services
                     AdvogadoId = AdvogadoId,
                     Nick = nick
                 };
+                Encoding iso = Encoding.GetEncoding("iso-8859-1");
 
                 var html = "http://www4.tjrj.jus.br/consultaProcessoWebV2/consultaMov.do?v=2&numProcesso=" + processoNumber + "&acessoIP=internet&tipoUsuario=";
-                HtmlWeb web = new HtmlWeb();            
+                HtmlWeb web = new HtmlWeb() {
+                    AutoDetectEncoding = false,
+                    OverrideEncoding = iso,
+                };            
                 var htmlDoc = web.Load(html);
                 var master = new ProcessoMaster
                 {
@@ -61,6 +67,7 @@ namespace GitProc.Services
                                         if (child.InnerText != "&nbsp;")
                                         {
                                             string convertedText = WebUtility.HtmlDecode(Regex.Replace(child.InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
+                                            string teste = HttpUtility.HtmlDecode(Regex.Replace(child.InnerText.Replace("\r\n", string.Empty), " {2,}", " "));
                                             if (convertedText.Contains(" As informações aqui contidas não produzem efeitos legais. Somente a publicação no DJERJ oficializa despachos e decisões e estabelece prazos."))
                                             {
                                             }
