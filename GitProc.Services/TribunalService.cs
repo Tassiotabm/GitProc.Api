@@ -239,7 +239,18 @@ namespace GitProc.Services
                                             processoMaster.Tribunal = stringArray[0];
                                             processoMaster.DataVerificacao = Convert.ToDateTime(stringArray[1]);
                                             processoMaster.Instancia = stringArray[2];
-                                            processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 10));
+                                            DateTime temp;
+                                            int tempN = 10;
+                                            while (!DateTime.TryParse(stringArray[3].Substring(stringArray[3].Length - tempN), out temp))
+                                            {
+                                                tempN++;
+                                                if (tempN > 15)
+                                                {
+                                                    tempN = 0;
+                                                    break;
+                                                }
+                                            }
+                                            processoMaster.DataDistribuicao = tempN == 0 ? new DateTime() : Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - tempN));
                                         }
                                         else if (convertedText.Contains("Regional") || convertedText.Contains("Comarca"))
                                         {
