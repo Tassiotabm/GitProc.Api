@@ -85,7 +85,7 @@ namespace GitProc.Services
                                                 }
                                                 else
                                                 {
-                                                    processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 9));
+                                                    processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 11));
                                                 }
 
                                             }
