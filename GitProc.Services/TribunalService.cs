@@ -79,15 +79,17 @@ namespace GitProc.Services
                                                 processoMaster.Instancia = stringArray[2];
 
                                                 DateTime temp;
-                                                if (DateTime.TryParse(stringArray[3].Substring(stringArray[3].Length - 10), out temp))
+                                                int tempN = 10;
+                                                while(! DateTime.TryParse(stringArray[3].Substring(stringArray[3].Length - tempN), out temp))
                                                 {
-                                                    processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 10));
+                                                    tempN++;
+                                                    if(tempN > 15)
+                                                    {
+                                                        tempN = 0;
+                                                        break;
+                                                    }
                                                 }
-                                                else
-                                                {
-                                                    processoMaster.DataDistribuicao = Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - 11));
-                                                }
-
+                                                processoMaster.DataDistribuicao = tempN == 0? new DateTime() : Convert.ToDateTime(stringArray[3].Substring(stringArray[3].Length - tempN));
                                             }
                                             else if (convertedText.Contains("Regional") || convertedText.Contains("Comarca"))
                                             {
